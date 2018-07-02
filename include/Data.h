@@ -15,6 +15,7 @@
 #include <random>
 #include <algorithm>
 #include <ctime>
+#include <functional>
 
 using namespace std;
 
@@ -40,9 +41,9 @@ public:
 
     int getFeatureSize();
 
-    vector<int> generateSample(int n);
+    vector<int> generateSample(int &num);
 
-    vector<int> generateFeatures(int m);
+    vector<int> generateFeatures(function<int(int)> &func);
 };
 
 void writeDataToCSV(vector<double> &results,
