@@ -36,8 +36,8 @@ double computeGiniIndex(vector<int> &samples,
                         vector<int> &samplesLeft,
                         vector<int> &samplesRight,
                         Data &Data) {
-    double leftProb = ((double)samplesLeft.size() / samples.size());
-    double rightprob = ((double)samplesRight.size() / samples.size());
+    double leftProb = ((double) samplesLeft.size() / samples.size());
+    double rightprob = ((double) samplesRight.size() / samples.size());
     return leftProb * computeGini(samplesLeft, Data)
            + rightprob * computeGini(samplesRight, Data);
 }
@@ -86,6 +86,9 @@ void DecisionTree::chooseBestSplitFeatures(shared_ptr<Node> &node,
                                            vector<int> &featuresVec,
                                            Data &Data) {
     vector<int> samplesLeft, samplesRight;
+    if (featuresVec.size() == 0) {
+        cerr << "error" << endl;
+    }
     int bestFeatureIndex = featuresVec[0];
     double minValue = 1000000000, bestThreshold = 0;
     for (auto featureIndex : featuresVec) {
@@ -94,6 +97,7 @@ void DecisionTree::chooseBestSplitFeatures(shared_ptr<Node> &node,
         for (auto iter = featureRange.begin();
              iter != featureRange.end(); iter++) {
             double threahold = *iter;
+
             splitSamplesVec(featureIndex, threahold, samplesVec,
                             samplesLeft, samplesRight, Data);
             double value = criterionFunc(samplesVec, samplesLeft,
@@ -109,27 +113,35 @@ void DecisionTree::chooseBestSplitFeatures(shared_ptr<Node> &node,
     node->threshold = bestThreshold;
 }
 
-shared_ptr<DecisionTree::Node> DecisionTree::constructNode(vector<int> &samplesVec,
-                                                           Data &trainData,
-                                                           int depth) {
+shared_ptr<DecisionTree::Node>
+DecisionTree::constructNode(vector<int> &samplesVec,
+                            Data &trainData,
+                            int depth) {
     double targetProb = computeTargetProb(samplesVec, trainData);
     shared_ptr<Node> node(new Node());
     node->depth = depth;
     node->prob = 0;
     if (targetProb == 0 || targetProb == 1 ||
-        samplesVec.size() < minSamplesSplit || depth == maxDepth) {
+        samplesVec.size() <= minSamplesSplit || depth == maxDepth) {
         node->isLeaf = true;
         node->prob = targetProb;
     } else {
-        vector<int> featuresVec = trainData.generateFeatures(this->maxFeatureFunc);
+        vector<int> featuresVec = trainData.generateFeatures(
+                this->maxFeatureFunc);
         chooseBestSplitFeatures(node, samplesVec, featuresVec, trainData);
         vector<int> sampleLeft, sampleRight;
         splitSamplesVec(node->featureIndex, node->threshold, samplesVec,
                         sampleLeft, sampleRight, trainData);
-        node->left = constructNode(sampleLeft, trainData, depth + 1);
-        node->right = constructNode(sampleRight, trainData, depth + 1);
+        if ((sampleLeft.size() < minSamplesLeaf) or (sampleRight.size() < minSamplesLeaf)) {
+            node->isLeaf = true;
+            node->prob = targetProb;
+        } else {
+            node->left = constructNode(sampleLeft, trainData, depth + 1);
+            node->right = constructNode(sampleRight, trainData, depth + 1);
+        }
     }
     return node;
+
 }
 
 DecisionTree::DecisionTree(const string &criterion,
@@ -137,7 +149,7 @@ DecisionTree::DecisionTree(const string &criterion,
                            int minSamplesSplit,
                            int minSamplesLeaf,
                            int sampleNum,
-                           const string& maxFeatures) {
+                           const string &maxFeatures) {
     if (criterion == "gini") {
         this->criterionFunc = computeGiniIndex;
     } else if (criterion == "entropy") {
@@ -167,7 +179,8 @@ void DecisionTree::fit(Data &trainData) {
 double DecisionTree::computeProb(int sampleIndex, Data &Data) {
     auto node = root;
     while (!node->isLeaf) {
-        if (Data.readFeature(sampleIndex, node->featureIndex) >= node->threshold) {
+        if (Data.readFeature(sampleIndex, node->featureIndex) >=
+            node->threshold) {
             node = node->right;
         } else {
             node = node->left;
