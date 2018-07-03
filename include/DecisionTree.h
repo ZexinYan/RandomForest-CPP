@@ -70,7 +70,6 @@ private:
 
     void chooseBestSplitFeatures(shared_ptr<Node> &node,
                                  vector<int> &samplesVec,
-                                 vector<int> &featuresVec,
                                  Data &Data);
 
     shared_ptr<Node> constructNode(vector<int> &sampleVec,

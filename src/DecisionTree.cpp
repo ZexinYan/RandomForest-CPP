@@ -92,7 +92,7 @@ void DecisionTree::splitSamplesVec(int &featureIndex, double &threshold,
     samplesLeft.clear();
     samplesRight.clear();
     for (auto samplesIndex : samplesVec) {
-        if (Data.readFeature(samplesIndex, featureIndex) >=
+        if (Data.readFeature(samplesIndex, featureIndex) >
             threshold) {
             samplesRight.push_back(samplesIndex);
         } else {
@@ -103,8 +103,8 @@ void DecisionTree::splitSamplesVec(int &featureIndex, double &threshold,
 
 void DecisionTree::chooseBestSplitFeatures(shared_ptr<Node> &node,
                                            vector<int> &samplesVec,
-                                           vector<int> &featuresVec,
                                            Data &Data) {
+    vector<int> featuresVec = Data.generateFeatures(this->maxFeatureFunc);
     int bestFeatureIndex = featuresVec[0];
     int samplesTrueNum = computeTure(samplesVec, Data);
     double minValue = 1000000000, bestThreshold = 0;
@@ -128,8 +128,8 @@ void DecisionTree::chooseBestSplitFeatures(shared_ptr<Node> &node,
                 index++;
                 sampleIndex = samplesVec[index];
             }
+            if (index == samplesVec.size()) { continue; }
             double value = criterionFunc(leftTrue, leftSize, rightTrue, rightSize);
-//            cout << value << endl;
             if (value <= minValue) {
                 if (value == minValue) {
                     int info = (leftSize / 100) * (rightSize / 100);
@@ -163,9 +163,7 @@ DecisionTree::constructNode(vector<int> &samplesVec,
         node->isLeaf = true;
         node->prob = targetProb;
     } else {
-        vector<int> featuresVec = trainData.generateFeatures(
-                this->maxFeatureFunc);
-        chooseBestSplitFeatures(node, samplesVec, featuresVec, trainData);
+        chooseBestSplitFeatures(node, samplesVec, trainData);
         vector<int> sampleLeft, sampleRight;
         splitSamplesVec(node->featureIndex, node->threshold, samplesVec,
                         sampleLeft, sampleRight, trainData);
@@ -175,8 +173,10 @@ DecisionTree::constructNode(vector<int> &samplesVec,
             node->isLeaf = true;
             node->prob = targetProb;
         } else {
-            node->left = constructNode(sampleLeft, trainData, depth + 1);
-            node->right = constructNode(sampleRight, trainData, depth + 1);
+            node->left = constructNode(sampleLeft, trainData,
+                    depth + 1);
+            node->right = constructNode(sampleRight, trainData,
+                    depth + 1);
         }
     }
     return node;
@@ -218,7 +218,7 @@ void DecisionTree::fit(Data &trainData) {
 double DecisionTree::computeProb(int sampleIndex, Data &Data) {
     auto node = root;
     while (!node->isLeaf) {
-        if (Data.readFeature(sampleIndex, node->featureIndex) >=
+        if (Data.readFeature(sampleIndex, node->featureIndex) >
             node->threshold) {
             node = node->right;
         } else {
