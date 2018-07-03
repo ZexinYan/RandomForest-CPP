@@ -101,6 +101,18 @@ void DecisionTree::splitSamplesVec(int &featureIndex, double &threshold,
     }
 }
 
+void sortByFeatures(vector<pair<int, double>>& samplesFeaturesVec,
+                    int featureIndex, Data& data) {
+    for (int i = 0; i < samplesFeaturesVec.size(); i++) {
+        samplesFeaturesVec[i].second
+                = data.readFeature(samplesFeaturesVec[i].first, featureIndex);
+    }
+    sort(samplesFeaturesVec.begin(), samplesFeaturesVec.end(), [](pair<int,
+    double>& a, pair<int, double>& b) {
+        return a.second < b.second;
+    });
+}
+
 void DecisionTree::chooseBestSplitFeatures(shared_ptr<Node> &node,
                                            vector<int> &samplesVec,
                                            Data &Data) {
@@ -110,16 +122,23 @@ void DecisionTree::chooseBestSplitFeatures(shared_ptr<Node> &node,
     double minValue = 1000000000, bestThreshold = 0;
     double threshold = 0;
     int sampleIndex;
+    vector<pair<int, double>> samplesFeaturesVec;
+    samplesFeaturesVec.reserve(samplesVec.size());
+    for (auto index : samplesVec) {
+        samplesFeaturesVec.emplace_back(index, 0);
+    }
+
     for (auto featureIndex : featuresVec) {
         auto now = time(NULL);
-        Data.sortByFeature(samplesVec, featureIndex);
+        sortByFeatures(samplesFeaturesVec, featureIndex, Data);
+        cout << "   Sort: " << (time(NULL) - now) << endl;
         int leftSize = 0, rightSize = (int)samplesVec.size();
         int leftTrue = 0, rightTrue = samplesTrueNum;
-        for (int index = 0; index < samplesVec.size();) {
-            sampleIndex = samplesVec[index];
-            threshold = Data.readFeature(sampleIndex, featureIndex);
+        for (int index = 0; index < samplesFeaturesVec.size();) {
+            sampleIndex = samplesFeaturesVec[index].first;
+            threshold = samplesFeaturesVec[index].second;
             while (index < samplesVec.size() &&
-                   Data.readFeature(sampleIndex, featureIndex) <= threshold) {
+                   samplesFeaturesVec[index].second <= threshold) {
                 leftSize++;
                 rightSize--;
                 if (Data.readTarget(sampleIndex) == 1) {
@@ -127,7 +146,7 @@ void DecisionTree::chooseBestSplitFeatures(shared_ptr<Node> &node,
                     rightTrue--;
                 }
                 index++;
-                sampleIndex = samplesVec[index];
+                sampleIndex = samplesFeaturesVec[index].first;
             }
             if (index == samplesVec.size()) { continue; }
             double value = criterionFunc(leftTrue, leftSize, rightTrue, rightSize);
@@ -137,7 +156,6 @@ void DecisionTree::chooseBestSplitFeatures(shared_ptr<Node> &node,
                 bestFeatureIndex = featureIndex;
             }
         }
-        cout << (time(NULL) - now) << endl;
     }
     node->featureIndex = bestFeatureIndex;
     node->threshold = bestThreshold;
@@ -157,11 +175,12 @@ DecisionTree::constructNode(vector<int> &samplesVec,
         node->isLeaf = true;
         node->prob = targetProb;
     } else {
+        int now = time(NULL);
         chooseBestSplitFeatures(node, samplesVec, trainData);
+        cout << "Choose time: " << (time(NULL) - now) << endl;
         vector<int> sampleLeft, sampleRight;
         splitSamplesVec(node->featureIndex, node->threshold, samplesVec,
                         sampleLeft, sampleRight, trainData);
-////        cout << sampleLeft.size() << " " << sampleRight.size() << endl;
         if ((sampleLeft.size() < minSamplesLeaf) or
             (sampleRight.size() < minSamplesLeaf)) {
             node->isLeaf = true;
