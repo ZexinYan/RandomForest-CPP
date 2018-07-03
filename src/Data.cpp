@@ -100,9 +100,16 @@ vector<int> Data::generateFeatures(function<int(int)> &func) {
     } else {
         for (int i = 0; i < m; i++) {
             randomSample[i] = distribution(generator);
-            cout << randomSample[i] << " ";
+//            cout << randomSample[i] << " ";
         }
-        cout << endl;
+//        cout << endl;
     }
     return randomSample;
+}
+
+void Data::sortByFeature(vector<int> &samplesVec, int featureIndex) {
+    sort(samplesVec.begin(), samplesVec.end(), [&](int a, int b) {
+        return this->readFeature(a, featureIndex) <
+               this->readFeature(b, featureIndex);
+    });
 }

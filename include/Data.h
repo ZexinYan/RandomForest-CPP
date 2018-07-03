@@ -44,6 +44,8 @@ public:
     vector<int> generateSample(int &num);
 
     vector<int> generateFeatures(function<int(int)> &func);
+
+    void sortByFeature(vector<int> &samplesVec, int featureIndex);
 };
 
 void writeDataToCSV(vector<double> &results,
