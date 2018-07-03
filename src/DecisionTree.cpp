@@ -108,9 +108,10 @@ void DecisionTree::chooseBestSplitFeatures(shared_ptr<Node> &node,
     int bestFeatureIndex = featuresVec[0];
     int samplesTrueNum = computeTure(samplesVec, Data);
     double minValue = 1000000000, bestThreshold = 0;
-    double threshold = 0, splitInfo = 0;
+    double threshold = 0;
     int sampleIndex;
     for (auto featureIndex : featuresVec) {
+        auto now = time(NULL);
         Data.sortByFeature(samplesVec, featureIndex);
         int leftSize = 0, rightSize = (int)samplesVec.size();
         int leftTrue = 0, rightTrue = samplesTrueNum;
@@ -131,19 +132,12 @@ void DecisionTree::chooseBestSplitFeatures(shared_ptr<Node> &node,
             if (index == samplesVec.size()) { continue; }
             double value = criterionFunc(leftTrue, leftSize, rightTrue, rightSize);
             if (value <= minValue) {
-                if (value == minValue) {
-                    int info = (leftSize / 100) * (rightSize / 100);
-                    if (info < splitInfo) {
-                        continue;
-                    } else {
-                        splitInfo = info;
-                    }
-                }
                 minValue = value;
                 bestThreshold = threshold;
                 bestFeatureIndex = featureIndex;
             }
         }
+        cout << (time(NULL) - now) << endl;
     }
     node->featureIndex = bestFeatureIndex;
     node->threshold = bestThreshold;
