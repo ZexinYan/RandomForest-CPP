@@ -147,7 +147,7 @@ void DecisionTree::chooseBestSplitFeatures(shared_ptr<Node> &node,
     }
     node->featureIndex = bestFeatureIndex;
     node->threshold = bestThreshold;
-    cout << node->featureIndex << " " << node->threshold << endl;
+//    cout << node->featureIndex << " " << node->threshold << endl;
 }
 
 shared_ptr<DecisionTree::Node>
@@ -167,7 +167,7 @@ DecisionTree::constructNode(vector<int> &samplesVec,
         vector<int> sampleLeft, sampleRight;
         splitSamplesVec(node->featureIndex, node->threshold, samplesVec,
                         sampleLeft, sampleRight, trainData);
-        cout << sampleLeft.size() << " " << sampleRight.size() << endl;
+////        cout << sampleLeft.size() << " " << sampleRight.size() << endl;
         if ((sampleLeft.size() < minSamplesLeaf) or
             (sampleRight.size() < minSamplesLeaf)) {
             node->isLeaf = true;

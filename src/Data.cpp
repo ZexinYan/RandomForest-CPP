@@ -28,6 +28,7 @@ writeDataToCSV(vector<double> &results, Data &data, const string &filename) {
 
 Data::Data(bool isTrain, int size) {
     features.reserve(size);
+    samplesVec.reserve(size);
     if (isTrain) { target.reserve(size); }
     this->isTrain = isTrain;
 }
@@ -53,8 +54,13 @@ void Data::read(const string &filename) {
         }
         features.push_back(sample);
         if (this->isTrain) { target.push_back(atoi(results[0].c_str())); }
+        samplesVec.push_back(this->samplesSize++);
     }
     inputFile.close();
+    featuresVec.reserve(featureSize);
+    for (int i = 0; i < featureSize; i++) {
+        featuresVec.push_back(i);
+    }
 }
 
 double Data::readFeature(int sampleIndex, int featureIndex) {
@@ -79,38 +85,44 @@ int Data::getFeatureSize() {
 }
 
 vector<int> Data::generateSample(int &num) {
-    default_random_engine generator(time(NULL));
-    uniform_int_distribution<int> distribution(0, getSampleSize() - 1);
-    int n = this->getSampleSize();
-    if (num != -1) { n = num; }
-    vector<int> randomSample(n, 0);
-    if (n == getSampleSize()) {
-        for (int i = 0; i < n; i++) {
-            randomSample[i] = i;
-        }
+//    default_random_engine generator(time(NULL));
+//    uniform_int_distribution<int> distribution(0, getSampleSize() - 1);
+//    int n = this->getSampleSize();
+//    if (num != -1) { n = num; }
+//    vector<int> randomSample(n, 0);
+//    if (n == getSampleSize()) {
+//        for (int i = 0; i < n; i++) {
+//            randomSample[i] = i;
+//        }
+//    } else {
+//        for (int i = 0; i < n; i++) {
+//            randomSample[i] = distribution(generator);
+//        }
+//    }
+    if (num == -1) {
+        return samplesVec;
     } else {
-        for (int i = 0; i < n; i++) {
-            randomSample[i] = distribution(generator);
-        }
+        random_shuffle(samplesVec.begin(), samplesVec.end());
+        return vector<int>(samplesVec.begin(), samplesVec.begin() + num);
     }
-    return randomSample;
 }
 
 vector<int> Data::generateFeatures(function<int(int)> &func) {
-    default_random_engine generator(time(NULL));
-    uniform_int_distribution<int> distribution(0, getFeatureSize() - 1);
+//    default_random_engine generator(time(NULL));
+//    uniform_int_distribution<int> distribution(0, getFeatureSize() - 1);
+//    vector<int> randomSample(m, 0);
+//    if (m == getFeatureSize()) {
+//        for (int i = 0; i < m; i++) { randomSample[i] = i; }
+//    } else {
+//        for (int i = 0; i < m; i++) {
+//            randomSample[i] = distribution(generator);
+//            cout << randomSample[i] << " ";
+//        }
+//        cout << endl;
+//    }
     int m = func(this->getFeatureSize());
-    vector<int> randomSample(m, 0);
-    if (m == getFeatureSize()) {
-        for (int i = 0; i < m; i++) { randomSample[i] = i; }
-    } else {
-        for (int i = 0; i < m; i++) {
-            randomSample[i] = distribution(generator);
-            cout << randomSample[i] << " ";
-        }
-        cout << endl;
-    }
-    return randomSample;
+    random_shuffle(featuresVec.begin(), featuresVec.end());
+    return vector<int>(featuresVec.begin(), featuresVec.begin() + m);
 }
 
 void Data::sortByFeature(vector<int> &samplesVec, int featureIndex) {

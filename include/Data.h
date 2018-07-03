@@ -16,6 +16,7 @@
 #include <algorithm>
 #include <ctime>
 #include <functional>
+#include <algorithm>
 
 using namespace std;
 
@@ -26,7 +27,10 @@ private:
     vector<map<int, double>> features;
     vector<int> target;
     int featureSize = 0;
+    int samplesSize = 0;
     bool isTrain;
+    vector<int> featuresVec;
+    vector<int> samplesVec;
 
 public:
     Data(bool isTrain = true, int size = 1719692);
