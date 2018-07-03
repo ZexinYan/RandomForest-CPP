@@ -84,8 +84,14 @@ vector<int> Data::generateSample(int &num) {
     int n = this->getSampleSize();
     if (num != -1) { n = num; }
     vector<int> randomSample(n, 0);
-    for (int i = 0; i < n; i++) {
-        randomSample[i] = distribution(generator);
+    if (n == getSampleSize()) {
+        for (int i = 0; i < n; i++) {
+            randomSample[i] = i;
+        }
+    } else {
+        for (int i = 0; i < n; i++) {
+            randomSample[i] = distribution(generator);
+        }
     }
     return randomSample;
 }
@@ -100,9 +106,9 @@ vector<int> Data::generateFeatures(function<int(int)> &func) {
     } else {
         for (int i = 0; i < m; i++) {
             randomSample[i] = distribution(generator);
-//            cout << randomSample[i] << " ";
+            cout << randomSample[i] << " ";
         }
-//        cout << endl;
+        cout << endl;
     }
     return randomSample;
 }

@@ -5,14 +5,14 @@
 
 int main() {
     Data trainData(true, 50);
-    trainData.read("../data/train.txt");
+    trainData.read("../data/debug.txt");
 
-    DecisionTree tree("gini", 1, 100, 1, -1, "log2");
+    DecisionTree tree("gini", -1, 100, 1, -1, "none");
 
     tree.fit(trainData);
 
     vector<double> results(trainData.getSampleSize(), 0);
     tree.predictProba(trainData, results);
-    writeDataToCSV(results, trainData, "../results/train.csv");
+    writeDataToCSV(results, trainData, "../results/debug.csv");
     return 0;
 }
