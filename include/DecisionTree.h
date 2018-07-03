@@ -16,19 +16,16 @@ using namespace std;
 
 double computeTargetProb(vector<int> &samplesVec, Data &Data);
 
-double computeEntropy(vector<int> &samples, Data &Data);
+//double computeEntropy(vector<int> &samples, Data &Data);
 
-double computeGini(vector<int> &samples, Data &Data);
+double computeGini(int &, int &);
 
-double computeInformationGain(vector<int> &samples,
-                              vector<int> &samplesLeft,
-                              vector<int> &samplesRight,
-                              Data &Data);
+//double computeInformationGain(vector<int> &samples,
+//                              vector<int> &samplesLeft,
+//                              vector<int> &samplesRight,
+//                              Data &Data);
 
-double computeGiniIndex(vector<int> &samples,
-                        vector<int> &samplesLeft,
-                        vector<int> &samplesRight,
-                        Data &Data);
+double computeGiniIndex(int &, int &, int &, int &);
 
 int _sqrt(int num);
 
@@ -59,8 +56,7 @@ private:
     int minSamplesSplit;
     int minSamplesLeaf;
     int sampleNum;
-    function<double(vector<int> &, vector<int> &, vector<int> &,
-                    Data &)> criterionFunc;
+    function<double(int&, int&, int&, int&)> criterionFunc;
     function<int(int)> maxFeatureFunc;
     shared_ptr<Node> root;
 
@@ -74,7 +70,6 @@ private:
 
     void chooseBestSplitFeatures(shared_ptr<Node> &node,
                                  vector<int> &samplesVec,
-                                 vector<int> &featuresVec,
                                  Data &Data);
 
     shared_ptr<Node> constructNode(vector<int> &sampleVec,
