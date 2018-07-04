@@ -10,8 +10,8 @@ vector<string> splitBySpace(string &sentence) {
                           istream_iterator<string>{}};
 }
 
-void
-writeDataToCSV(vector<double> &results, Data &data, const string &filename) {
+void writeDataToCSV(vector<double> &results, Data &data,
+                    const string &filename) {
     ofstream out(filename);
     if (out.is_open()) {
         out << "id,label,real\n";
@@ -76,20 +76,6 @@ int Data::getFeatureSize() {
 }
 
 vector<int> Data::generateSample(int &num) {
-//    default_random_engine generator(time(NULL));
-//    uniform_int_distribution<int> distribution(0, getSampleSize() - 1);
-//    int n = this->getSampleSize();
-//    if (num != -1) { n = num; }
-//    vector<int> randomSample(n, 0);
-//    if (n == getSampleSize()) {
-//        for (int i = 0; i < n; i++) {
-//            randomSample[i] = i;
-//        }
-//    } else {
-//        for (int i = 0; i < n; i++) {
-//            randomSample[i] = distribution(generator);
-//        }
-//    }
     if (num == -1) {
         return samplesVec;
     } else {
@@ -99,18 +85,6 @@ vector<int> Data::generateSample(int &num) {
 }
 
 vector<int> Data::generateFeatures(function<int(int)> &func) {
-//    default_random_engine generator(time(NULL));
-//    uniform_int_distribution<int> distribution(0, getFeatureSize() - 1);
-//    vector<int> randomSample(m, 0);
-//    if (m == getFeatureSize()) {
-//        for (int i = 0; i < m; i++) { randomSample[i] = i; }
-//    } else {
-//        for (int i = 0; i < m; i++) {
-//            randomSample[i] = distribution(generator);
-//            cout << randomSample[i] << " ";
-//        }
-//        cout << endl;
-//    }
     int m = func(this->getFeatureSize());
     random_shuffle(featuresVec.begin(), featuresVec.end());
     return vector<int>(featuresVec.begin(), featuresVec.begin() + m);
