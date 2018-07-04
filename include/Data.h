@@ -24,7 +24,7 @@ vector<string> splitBySpace(string &sentence);
 
 class Data {
 private:
-    vector<map<int, double>> features;
+    vector<vector<double>> features;
     vector<int> target;
     int featureSize = 0;
     int samplesSize = 0;
@@ -33,7 +33,7 @@ private:
     vector<int> samplesVec;
 
 public:
-    Data(bool isTrain = true, int size = 1719692);
+    Data(bool isTrain = true, int size = 1719692, int featuresSize = 201);
 
     void read(const string &filename);
 

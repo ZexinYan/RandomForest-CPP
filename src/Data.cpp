@@ -26,7 +26,8 @@ writeDataToCSV(vector<double> &results, Data &data, const string &filename) {
     }
 }
 
-Data::Data(bool isTrain, int size) {
+Data::Data(bool isTrain, int size, int featuresSize) {
+    this->featureSize = featuresSize;
     features.reserve(size);
     samplesVec.reserve(size);
     if (isTrain) { target.reserve(size); }
@@ -36,40 +37,30 @@ Data::Data(bool isTrain, int size) {
 void Data::read(const string &filename) {
     ifstream inputFile;
     inputFile.open(filename.c_str());
-    if (!inputFile.is_open()) {
-        cout << "Failed Open" << endl;
-    }
+    if (!inputFile.is_open()) { cout << "Failed Open" << endl; }
     string str;
     int startIndex = this->isTrain ? 1 : 0;
     while (getline(inputFile, str)) {
         auto results = splitBySpace(str);
-        map<int, double> sample;
+        vector<double> sample(this->featureSize, 0);
         for (int i = startIndex; i < results.size(); i++) {
             int key = atoi(
                     results[i].substr(0, results[i].find(":")).c_str());
             double value = atof(results[i].substr(
                     results[i].find(":") + 1).c_str());
             sample[key] = value;
-            featureSize = max(featureSize, key);
         }
-        features.push_back(sample);
+        this->features.push_back(sample);
         if (this->isTrain) { target.push_back(atoi(results[0].c_str())); }
         samplesVec.push_back(this->samplesSize++);
     }
     inputFile.close();
-    featuresVec.reserve(featureSize);
-    for (int i = 0; i < featureSize; i++) {
-        featuresVec.push_back(i);
-    }
+    featuresVec.reserve(this->featureSize);
+    for (int i = 0; i < featureSize; i++) { featuresVec.push_back(i); }
 }
 
 double Data::readFeature(int sampleIndex, int featureIndex) {
-    if (features[sampleIndex].find(featureIndex) !=
-        features[sampleIndex].end()) {
-        return features[sampleIndex][featureIndex];
-    } else {
-        return 0;
-    }
+    return features[sampleIndex][featureIndex];
 }
 
 int Data::readTarget(int sampleIndex) {

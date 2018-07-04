@@ -6,9 +6,10 @@ int main() {
     Data trainData(true, 1719692);
     trainData.read("../data/train.txt");
 
-    for (int i = 0; i < 100000; i++) {
-        for (int j = 0; j < 200; j++) {
+    for (int i = 0; i < 1000000; i++) {
+        for (int j = 0; j < 201; j++) {
             trainData.readFeature(i, j);
+//            cout << i << " " << j << " " << trainData.readFeature(i, j) << endl;
         }
     }
 
