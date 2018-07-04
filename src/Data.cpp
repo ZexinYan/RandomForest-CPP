@@ -14,7 +14,8 @@ void writeDataToCSV(vector<double> &results, Data &data,
                     const string &filename, bool train) {
     ofstream out(filename);
     if (out.is_open()) {
-        out << "id,label,real\n";
+        out << "id,label";
+        if (train) { out << ",real\n"; } else { out << "\n"; }
         int i = 0;
         for (auto each : results) {
             out << i << "," << each;
