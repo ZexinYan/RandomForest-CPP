@@ -11,13 +11,18 @@ vector<string> splitBySpace(string &sentence) {
 }
 
 void writeDataToCSV(vector<double> &results, Data &data,
-                    const string &filename) {
+                    const string &filename, bool train) {
     ofstream out(filename);
     if (out.is_open()) {
         out << "id,label,real\n";
         int i = 0;
         for (auto each : results) {
-            out << i << "," << each << "," << data.readTarget(i) << "\n";
+            out << i << "," << each;
+            if (train) {
+                out << "," << data.readTarget(i) << "\n";
+            } else {
+                out << "\n";
+            }
             i++;
         }
         out.close();

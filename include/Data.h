@@ -54,6 +54,7 @@ public:
 
 void writeDataToCSV(vector<double> &results,
                     Data &data,
-                    const string &filename);
+                    const string &filename,
+                    bool train);
 
 #endif //RANDOMFOREST_DATA_H
