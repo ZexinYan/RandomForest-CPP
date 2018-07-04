@@ -61,29 +61,6 @@ public:
     void fit(Data &trainData);
 
     vector<double> predictProba(Data &Data);
-
-//
-
-//
-//    vector<double> predProb(Data &data) {
-////        ThreadPool pool(this->nJobs);
-////        vector<future<vector<double>>> results;
-////        for (int i = 0; i < nEstimators; i++) {
-////            results.emplace_back(pool.enqueue([&] {
-////                vector<double> part(data.getSampleSize(), 0);
-////                decisionTrees[i].predictProb(data, part);
-////                return part;
-////            }));
-////        }
-//        vector<double> part(data.getSampleSize(), 0);
-//        vector<double> total(data.getSampleSize(), 0);
-//        for (int i = 0; i < nEstimators; i++) {
-//            decisionTrees[i].predictProb(data, part);
-//            vecAdd(total, part);
-//        }
-//        norm(total);
-//        return total;
-//    }
 };
 
 #endif //RANDOMFOREST_RANDOMFOREST_H
