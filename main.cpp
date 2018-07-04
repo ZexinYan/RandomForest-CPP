@@ -1,17 +1,16 @@
 #include "include/DecisionTree.h"
 #include "include/Data.h"
-//#include "include/randomForest.h"
+#include "include/RandomForest.h"
 
 int main() {
     Data trainData(true, 1719692);
     trainData.read("../data/train.txt");
 
-    DecisionTree tree("gini", 10, 100, 1, -1, "log2");
+    RandomForest randomForest(100, "gini", "log2", -1, 100, 1, 1000000, 1);
 
-    tree.fit(trainData);
+    randomForest.fit(trainData);
 
-    vector<double> results(trainData.getSampleSize(), 0);
-    tree.predictProba(trainData, results);
-    writeDataToCSV(results, trainData, "../results/train1.csv");
+    auto results = randomForest.predictProba(trainData);
+    writeDataToCSV(results, trainData, "../results/randomForestResults.csv");
     return 0;
 }

@@ -129,9 +129,7 @@ void DecisionTree::chooseBestSplitFeatures(shared_ptr<Node> &node,
     }
 
     for (auto featureIndex : featuresVec) {
-        auto now = time(NULL);
         sortByFeatures(samplesFeaturesVec, featureIndex, Data);
-        cout << "   Sort: " << (time(NULL) - now) << endl;
         int leftSize = 0, rightSize = (int)samplesVec.size();
         int leftTrue = 0, rightTrue = samplesTrueNum;
         for (int index = 0; index < samplesFeaturesVec.size();) {
@@ -159,7 +157,6 @@ void DecisionTree::chooseBestSplitFeatures(shared_ptr<Node> &node,
     }
     node->featureIndex = bestFeatureIndex;
     node->threshold = bestThreshold;
-//    cout << node->featureIndex << " " << node->threshold << endl;
 }
 
 shared_ptr<DecisionTree::Node>
@@ -175,9 +172,7 @@ DecisionTree::constructNode(vector<int> &samplesVec,
         node->isLeaf = true;
         node->prob = targetProb;
     } else {
-        int now = time(NULL);
         chooseBestSplitFeatures(node, samplesVec, trainData);
-        cout << "Choose time: " << (time(NULL) - now) << endl;
         vector<int> sampleLeft, sampleRight;
         splitSamplesVec(node->featureIndex, node->threshold, samplesVec,
                         sampleLeft, sampleRight, trainData);
@@ -243,6 +238,6 @@ double DecisionTree::computeProb(int sampleIndex, Data &Data) {
 
 void DecisionTree::predictProba(Data &Data, vector<double> &results) {
     for (int i = 0; i < results.size(); i++) {
-        results[i] = computeProb(i, Data);
+        results[i] += computeProb(i, Data);
     }
 }
