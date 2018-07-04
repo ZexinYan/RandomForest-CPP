@@ -15,6 +15,8 @@
 #include <random>
 #include <algorithm>
 #include <ctime>
+#include <functional>
+#include <algorithm>
 
 using namespace std;
 
@@ -22,13 +24,16 @@ vector<string> splitBySpace(string &sentence);
 
 class Data {
 private:
-    vector<map<int, double>> features;
+    vector<vector<double>> features;
     vector<int> target;
     int featureSize = 0;
+    int samplesSize = 0;
     bool isTrain;
+    vector<int> featuresVec;
+    vector<int> samplesVec;
 
 public:
-    Data(bool isTrain = true, int size = 1719692);
+    Data(bool isTrain = true, int size = 1719692, int featuresSize = 201);
 
     void read(const string &filename);
 
@@ -40,9 +45,11 @@ public:
 
     int getFeatureSize();
 
-    vector<int> generateSample(int n);
+    vector<int> generateSample(int &num);
 
-    vector<int> generateFeatures(int m);
+    vector<int> generateFeatures(function<int(int)> &func);
+
+    void sortByFeature(vector<int> &samplesVec, int featureIndex);
 };
 
 void writeDataToCSV(vector<double> &results,
